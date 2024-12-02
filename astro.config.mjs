@@ -12,6 +12,6 @@ export default defineConfig({
   },
   site: "https://kevin-haus.netlify.app/",
   integrations: [icon(), sitemap(), react()],
-  output: "server",
+  output: "hybrid",
   adapter: netlify(),
 });
