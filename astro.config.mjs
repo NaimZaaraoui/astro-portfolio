@@ -8,10 +8,10 @@ import react from "@astrojs/react";
 // https://astro.build/config
 export default defineConfig({
   prefetch: {
-    prefetchAll: true
+    prefetchAll: true,
   },
-  site: "https://stargazers.club",
+  site: "https://kevin-haus.netlify.app/",
   integrations: [icon(), sitemap(), react()],
   output: "server",
-  adapter: netlify()
+  adapter: netlify(),
 });
