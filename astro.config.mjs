@@ -12,6 +12,6 @@ export default defineConfig({
   },
   site: "https://stargazers.club",
   integrations: [icon(), sitemap(), react()],
-  // output: "hybrid",
-  // adapter: netlify()
+  output: "hybrid",
+  adapter: netlify()
 });
