@@ -1,0 +1,123 @@
+---
+export const prerender = false
+// Astro tools
+import { getCollection } from "astro:content";
+
+// Components
+import PageIntro from "@/components/ui/PageIntro.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Heading from "@/components/ui/Heading.astro";
+import ProjectCard from "@/components/ui/ProjectCard.astro";
+import ContactSection from "@/components/sections/ContactSection.astro";
+
+// Utils
+import { slugify } from "@/scripts/utils";
+
+const allTools = await getCollection("tools");
+
+const allProjects = await getCollection("projects");
+---
+
+<BaseLayout title="Kevin Haus Projects"
+  description="Here are some recent projects I’ve done for clients.">
+  <PageIntro/>
+
+  <section class="section | flow">
+    <Heading tagName="h2" size="h4" class="text-uppercase ls-sm"
+      >Filter By Tools</Heading
+    >
+    <ul class="filter-list | flex">
+        <li>
+            <button
+              class="filter-btn | btn is-active"
+              data-type="badge"
+              data-filter=`all`
+            >
+              All
+            </button>
+          </li>
+      {
+        allTools.map(({ data }) => (
+          <li>
+            <button
+              class="filter-btn | btn"
+              data-type="badge"
+              data-filter=`${slugify(data.title)}`
+            >
+              {data.title}
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="projects-wrapper | grid-auto" data-projects>
+      {allProjects.map(({ data }) => <ProjectCard {data}/>)}
+    </div>
+  </section>
+
+  <ContactSection />
+</BaseLayout>
+
+<style>
+  .filter-list {
+    --gap: 0.75rem;
+  }
+</style>
+
+<script>
+    document.addEventListener("astro:page-load", () => {
+        // 
+        // Variables
+        // 
+
+        const filterList = document.querySelector(".filter-list");
+        const filterButtons = document.querySelectorAll(".filter-btn") as NodeListOf<HTMLButtonElement>;
+        const projects = document.querySelectorAll("[data-projects] article") as NodeListOf<HTMLDivElement>;
+
+        // 
+        // Functions & Methods
+        // 
+
+        function updateActiveButton(newButton: HTMLButtonElement) {
+        filterList?.querySelector(".is-active")?.classList.remove("is-active");
+        newButton.classList.add("is-active");
+        }
+
+        function filterProjects(filter: string) {
+          console.log("running filter");
+            projects.forEach(project => {
+              if(filter === "all" || project.classList.contains(filter)) {
+                project.removeAttribute("hidden");
+              } else {
+                project.setAttribute("hidden", "true");
+              }
+            })
+        }
+
+        // 
+        // Inits & Events handlers
+        // 
+
+
+        filterButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                const filter = button.dataset.filter;
+
+                if(filter) {
+                  if(!document.startViewTransition) {
+                    updateActiveButton(button);
+                    filterProjects(filter);
+                    return;
+                }
+
+                document.startViewTransition(() => {
+                    updateActiveButton(button);
+                    filterProjects(filter);
+                })
+
+                  }
+            });
+        })
+    })
+</script>

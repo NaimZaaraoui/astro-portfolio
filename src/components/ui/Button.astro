@@ -1,0 +1,15 @@
+---
+// Types
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"a"> {
+  href: string;
+  type?: "primary" | "outlined" | "badge";
+}
+
+const { href, type, ...rest } = Astro.props;
+---
+
+<a {href} class:list={["btn"]} data-type={type} {...rest}>
+  <slot />
+</a>

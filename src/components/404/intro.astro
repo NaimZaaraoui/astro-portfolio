@@ -1,0 +1,33 @@
+---
+// Astro tools
+import { Picture } from "astro:assets";
+
+// Components
+import Heading from "../ui/Heading.astro";
+import Button from "../ui/Button.astro";
+
+// Assets
+import avatar from "@/assets/avatar.avif";
+---
+
+<section class="intro | section">
+  <Picture
+    src={avatar}
+    alt="Kevin Haus avatar"
+    formats={["avif", "webp"]}
+    width={250}
+    pictureAttributes={{ class: "intro-banner" }}
+  />
+  <div class="flow">
+    <Heading tagName="h1" class="text-uppercase ls-sm">Are you lost?</Heading>
+    <p class="text-uppercase ls-md">Something seems wrong!!</p>
+    <p>
+      Oops! The page you're looking for seems to have wandered off. Please try
+      again or visit our homepage for more information.
+    </p>
+    <div class="btns-group | flex">
+      <Button href="/portfolio" type="outlined">See Projects</Button>
+      <Button href="/" type="primary">Go Home</Button>
+    </div>
+  </div>
+</section>

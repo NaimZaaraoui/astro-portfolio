@@ -1,0 +1,111 @@
+---
+// Astro tools
+import { Picture } from "astro:assets";
+
+// Components
+import Heading from "../ui/Heading.astro";
+
+// Assets
+import avatar from "@/assets/avatar-1.avif";
+---
+
+<section class="contact | section full-width" id="contact">
+  <div class="contact-pattern" data-pattern></div>
+  <div class="contact-wrapper">
+    <Picture src={avatar} alt="Kevin Haus avatar" />
+    <div>
+      <div class="section__intro">
+        <Heading tagName="h2" class="section__title">Let's Connect!</Heading>
+        <p>Reach out below for inquiries, quotes, or collaborations.</p>
+      </div>
+      <form action="" class="contact-form | flow">
+        <div class="form-group">
+          <label for="name">First Name</label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            placeholder="e.g.: Kevin Haus"
+          />
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="text"
+            name="email"
+            id="email"
+            placeholder="e.g.: kevin@gmail.com"
+          />
+        </div>
+        <button class="btn" data-type="primary"> Contact Me </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    position: relative;
+
+    .contact-pattern {
+      grid-column: full-width;
+    }
+  }
+
+  .contact-wrapper {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr 1.5rem;
+    grid-template-rows: 3vh 1fr 3vh;
+    place-items: center;
+
+    > picture {
+      height: 100%;
+      grid-area: 1 / 1 / -1 / -1;
+    }
+
+    > div {
+      grid-area: 2 / 2 / 3 / 3;
+      padding: 2em;
+      background-color: hsl(from var(--clr-base) h s l / 0.95);
+      box-shadow: var(--shadow);
+    }
+
+    @media (width >= 36em) {
+      grid-template-columns: 1.5fr 0.5fr 1fr;
+
+      > picture {
+        grid-area: 1 / 1 / -1 / 3;
+      }
+
+      > div {
+        grid-area: 2 / 2 / 3 / -1;
+      }
+    }
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-md);
+  }
+
+  .form-group {
+    display: grid;
+    gap: 0.5rem;
+
+    > label {
+      color: var(--clr-primary);
+      font-weight: var(--fw-medium);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-sm);
+    }
+
+    > input {
+      width: 100%;
+      padding: 0.5em 1em;
+      border: 2px solid var(--clr-text);
+      border-radius: var(--radius-pill);
+      color: var(--clr-text);
+    }
+  }
+</style>

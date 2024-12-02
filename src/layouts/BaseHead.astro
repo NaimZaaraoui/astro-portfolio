@@ -1,0 +1,40 @@
+---
+// Data
+import { baseData } from "@/data/siteData";
+
+// ViewTransitions
+import { ViewTransitions } from "astro:transitions";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = baseData.title, description = baseData.description } =
+  Astro.props;
+---
+
+<head>
+  <!-- Primary meta tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="generator" content={Astro.generator} />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <ViewTransitions/>
+  <script is:inline>
+    // Update theme on page load and
+    const setTheme = () => {
+      const theme = localStorage.getItem("theme");
+      if (theme) {
+        document.documentElement.dataset.theme = theme;
+      }
+    };
+
+    setTheme();
+    document.addEventListener("astro:after-swap", setTheme);
+  </script>
+</head>

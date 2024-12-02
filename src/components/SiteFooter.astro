@@ -1,0 +1,83 @@
+---
+// Astro tools
+import { Icon } from "astro-icon/components";
+
+// Data
+import { socialData } from "@/data/siteData";
+---
+
+<footer class="flex">
+  <p>
+    &copy; <span id="copyright-year">{new Date().getFullYear()}</span>
+    <strong>Kevin Haus</strong>. All rights reserved. I’m a skilled web
+    developer passionate about creating innovative and user-friendly websites.
+  </p>
+  <button class="theme-toggler">
+    <span class="visually-hidden">Toggle theme</span>
+    <Icon name="icon--theme" size={24} aria-hidden="true" />
+  </button>
+  <ul class="flex">
+    {
+      socialData.map(({ name, href, icon }) => (
+        <li>
+          <a href={href} aria-label={name}>
+            <Icon name={icon} size={22} aria-hidden="true"/>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</footer>
+
+<style>
+  footer {
+    --justify: space-between;
+
+    padding-block: 2em;
+  }
+
+  .theme-toggler {
+    padding: 1px 10px;
+    border: 3px solid var(--clr-primary);
+    border-radius: var(--radius-pill);
+    color: var(--clr-primary);
+    transition: var(--trans-300);
+
+    &:is(:hover, :focus-visible) {
+      color: var(--clr-base);
+      background-color: var(--clr-primary);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    // Set footer copyright year
+    const copyrightYear = document.querySelector(
+      "#copyright-year"
+    ) as HTMLSpanElement;
+    copyrightYear.textContent = new Date().getFullYear().toString();
+
+    // Toggle theme
+    const themeToggler = document.querySelector(
+      ".theme-toggler"
+    ) as HTMLButtonElement;
+
+    const currentTheme = localStorage.getItem("theme");
+    const setTheme = (theme: string) => {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("theme", theme);
+    };
+
+    if (currentTheme) {
+      setTheme(currentTheme);
+    }
+
+    themeToggler.addEventListener("click", () => {
+      const newTheme =
+        localStorage.getItem("theme") === "dark" ? "light" : "dark";
+      setTheme(newTheme);
+    });
+  });
+</script>
+

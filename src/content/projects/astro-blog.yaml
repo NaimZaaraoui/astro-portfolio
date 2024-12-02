@@ -1,0 +1,7 @@
+title: Astro Blog
+description: This project built using the new branding framework Astro, fully responsive and SEO friendly.
+image: ./images/astro-blog.jpg
+url: "https://simpldev.dev/projects/astro-blog/"
+icons:
+  - javascript
+  - css

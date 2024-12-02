@@ -1,0 +1,209 @@
+---
+// Astro types
+import type { GetStaticPaths } from "astro";
+import type { CollectionEntry } from "astro:content";
+
+// Astro tools
+import { getCollection, getEntry } from "astro:content";
+import { getEntries } from "astro:content";
+import { Picture, Image } from "astro:assets";
+
+// Utils
+import { slugify } from "@/scripts/utils";
+
+// Components
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import FormattedDate from "@/components/ui/FormattedDate.astro";
+import Heading from "@/components/ui/Heading.astro";
+import PageIntro from "@/components/ui/PageIntro.astro";
+import PostCard from "@/components/ui/PostCard.astro";
+import CategoryCloud from "@/components/ui/CategoryCloud.astro";
+
+export const getStaticPaths = (async () => {
+  const allPosts = await getCollection("posts");
+
+  const paths = allPosts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+
+  return paths;
+}) satisfies GetStaticPaths;
+
+interface Props {
+  post: CollectionEntry<"posts">;
+}
+
+const { post } = Astro.props;
+
+const { title, description, pubDate, author, image, relatedPosts } = post.data;
+
+const { Content, headings } = await post.render();
+const { data: authorData } = await getEntry(author);
+
+const relatedBlogs = relatedPosts ? await getEntries(relatedPosts) : null;
+
+// Get only h3 headings
+const contentHeadings = headings.filter(heading => heading.depth === 3);
+---
+
+<BaseLayout {title} {description}>
+  <article class="post-wrapper | section grid">
+    <header class="wrapper flow | text-center" data-type="sm">
+      <Heading
+        tagName="h1"
+        class="text-uppercase ls-sm">{title}</Heading
+      >
+      <p class="text-muted">
+        {description}
+      </p>
+      <div class="post-meta | flex">
+        <div class="post-author | flex" data-nowrap>
+          <Picture
+            src={authorData.headshot}
+            alt={authorData.name}
+            formats={["avif", "webp"]}
+            width={40}
+          />
+          <span>By <a href={`/blog/authors/${slugify(authorData.name)}/`}>{authorData.name}</a></span>
+        </div>
+        <FormattedDate {pubDate} />
+      </div>
+    </header>
+    <Picture
+      src={image}
+      alt={title}
+      formats={["avif", "webp"]}
+      transition:name={`${post.slug}-image`}
+    />
+    {
+      contentHeadings.length > 0 && <aside><nav class="content-table | grid" aria-label="Article headings">
+      <Heading tagName="h2" size="h4">In this article:</Heading>
+      <ul class="flow">
+        {
+          contentHeadings.map(({slug, text}) => (
+            <li>
+                <a href=`#${slug}`>{text}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    </aside>
+    }
+    <div class="post-content flow">
+      <Heading tagName="h2" class="visually-hidden">Post Content</Heading>
+      <Content />
+    </div>
+  <div class="post-tags | flow">
+    <Heading tagName="h2" size="h3">Blog Categories</Heading>
+            <CategoryCloud showCount={false}/>
+  </div>
+      {
+        relatedBlogs && (
+          <div class="related-posts | flow">
+            <Heading tagName="h2" size="h3">Related Posts</Heading>
+            <div class="related-wrapper | grid-auto">
+            {
+            relatedBlogs.map(post => <PostCard post={post} showImg={false} showDescription={false} showDate={false} showButton={false}/>)
+            }
+            </div>
+          </div>
+        )
+      }
+    <PageIntro
+      title="Hey, I'm Kevin"
+      description="I like to write about productivity, web development, design, and working with clients. Get a sense of what it’s like to work with me and understand my process"
+      class="post-author"
+    />
+  </article>
+</BaseLayout>
+
+<style>
+  .post-wrapper {
+    --gap: 2rem;
+
+    grid-template-columns: 1fr 250px;
+    grid-template-areas: 
+    "header header"
+    "pic pic"
+    "aside ."
+    "content content"
+    "tags tags"
+    "related-posts related-posts"
+    "author author";
+    
+    @media(width >= 62em) {
+      grid-template-areas: 
+    "header header"
+    "pic pic"
+    "content aside"
+    "tags ."
+    "related-posts ."
+    "author author";
+    }
+
+    > header {
+      grid-area: header;
+    }
+
+    > picture {
+      grid-area: pic;
+      
+      img {
+        width: 100%;
+      }
+    }
+
+    .post-content {
+      grid-area: content;
+
+      > * {
+         --flow-spacer: 1.5em;
+      }
+    }
+
+    > aside {
+      grid-area: aside;
+    }
+
+    .content-table {
+      --gap: 1.5rem;
+
+      position: sticky;
+      inset-block-start: 2rem;
+      padding: 1em;
+      border: 1px solid hsl(from var(--clr-text) h s l / 0.15);
+
+      li {
+        --flow-spacer: 0.25rem;
+      }
+
+      a {
+        text-decoration: underline;
+      }
+    }
+
+    .post-author {
+      grid-area: author;
+    }
+  }
+
+.post-tags {
+  grid-area: tags;
+}
+
+.related-posts {
+  grid-area: related-posts;
+}
+
+  .related-wrapper {
+    grid-template-rows: repeat(3, auto);
+
+    > * {
+      grid-row: span 3;
+      padding-block: 1.5em 0.5em;
+    }
+  }
+
+</style>

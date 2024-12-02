@@ -1,0 +1,81 @@
+---
+// Astro tools
+import { getCollection } from "astro:content";
+
+// Astro Types
+import type { GetStaticPaths } from "astro";
+import type { CollectionEntry } from "astro:content";
+
+// Components
+import PageIntro from "@/components/ui/PageIntro.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostCard from "@/components/ui/PostCard.astro";
+import ContactSection from "@/components/sections/ContactSection.astro";
+import Button from "@/components/ui/Button.astro";
+import Heading from "@/components/ui/Heading.astro";
+import CategoryCloud from "@/components/ui/CategoryCloud.astro";
+
+// Utils
+import { formatPosts } from "@/scripts/utils";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const allPosts = await getCollection("posts", ({ data }) =>
+    import.meta.env.PROD ? !data.isDraft : true
+  );
+  const formattedPosts: CollectionEntry<"posts">[] = formatPosts(allPosts);
+
+  
+  return paginate(formattedPosts, {
+    pageSize: 2,
+  });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+
+const { data: posts } = page;
+---
+
+<BaseLayout
+  title="Kevin Haus Posts"
+  description="Here are some recent projects I’ve done for clients."
+>
+  <PageIntro
+    title="My Writings"
+    description="I like to write about productivity, web development, design, and working with clients. Get a sense of what it’s like to work with me and understand my process."
+  />
+
+  <Heading tagName="h2" class="visually-hidden">Latest posts</Heading>
+
+  <section class="section | flow">
+    <div class="posts-wrapper | grid-auto">
+      {posts.map((post) => <PostCard {post} />)}
+    </div>
+    <CategoryCloud />
+
+    <div class="pagination | flex">
+      {
+        page.url.prev && (
+          <Button href={page.url.prev} type="outlined">
+            Prev
+          </Button>
+        )
+      }
+      {
+        page.url.next && (
+          <Button href={page.url.next} type="outlined">
+            Next
+          </Button>
+        )
+      }
+    </div>
+  </section>
+
+  <ContactSection />
+</BaseLayout>
+
+<style>
+  .pagination {
+    --justify: center;
+    margin-block-start: 2rem;
+  }
+</style>

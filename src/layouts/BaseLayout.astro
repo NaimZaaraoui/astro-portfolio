@@ -1,0 +1,23 @@
+---
+// Styles
+import "@/styles/style.css";
+
+// Astro Tools
+import { slide } from "astro:transitions";
+
+// Components
+import BaseHead from "./BaseHead.astro";
+import SiteHeader from "@/components/SiteHeader.astro";
+import SiteFooter from "@/components/SiteFooter.astro";
+---
+
+<html lang="en">
+  <BaseHead />
+  <body class="base-layout grail">
+    <SiteHeader />
+    <main class="full-width">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>

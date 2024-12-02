@@ -1,0 +1,7 @@
+title: E-Learning Platform
+description: An E-learning platform built using modern front-end technologies.
+image: ./images/e-learning.jpg
+url: "https://simpldev.dev/projects/e-learning-app/"
+icons:
+  - react-router
+  - react

@@ -1,0 +1,30 @@
+---
+// Astro tools
+import { getCollection } from "astro:content";
+
+// Components
+import Heading from "../ui/Heading.astro";
+import Button from "../ui/Button.astro";
+import ProjectCard from "../ui/ProjectCard.astro";
+
+const allProjects = await getCollection("projects");
+---
+
+<section class="portfolio | section | text-center">
+  <div class="section__intro | wrapper" data-type="sm">
+    <Heading tagName="h2" class="section__title">
+      Don’t take my word for it!
+    </Heading>
+    <p>Here are some recent websites and apps you can explore for yourself!</p>
+  </div>
+
+  <Button href="/portfolio" type="primary">See all projects</Button>
+
+  <div class="projects-wrapper | grid-auto">
+    {
+      allProjects.slice(0, 4).map(({ data }) => (
+          <ProjectCard {data} />
+      ))
+    }
+  </div>
+</section>

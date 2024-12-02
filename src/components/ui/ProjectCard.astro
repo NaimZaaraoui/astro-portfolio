@@ -1,0 +1,85 @@
+---
+// Astro tools
+import { Picture } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import { getEntries } from "astro:content";
+
+// Astro types
+import type { CollectionEntry } from "astro:content";
+
+// Components
+import Heading from "./Heading.astro";
+
+// Utils
+import { slugify } from "@/scripts/utils";
+
+interface Props {
+  data: CollectionEntry<"projects">["data"];
+  class?: string;
+}
+
+const { data, class: className, ...rest } = Astro.props;
+const { title, description, url, image, icons } = data;
+
+const iconsData = await getEntries(icons);
+
+const iconsNames = iconsData.map(({ data }) =>
+  slugify(data.title.toLowerCase())
+);
+---
+
+<article
+  class:list={["grid", className, iconsNames]}
+  {...rest}
+  transition:name={url}>
+  <Picture src={image} alt={title} formats={["avif", "webp"]} width={400} />
+  <a href={url} class="flex" data-nowrap>
+    <Heading tagName="h3" size="h4" class="text-uppercase ls-sm"
+      >{title}</Heading
+    >
+    <Icon
+      name="icon--external-link"
+      aria-hidden="true"
+      size={25}
+      style={{ flexShrink: "0" }}
+    />
+  </a>
+  <p>{description}</p>
+  <ul class="flex">
+    {
+      iconsData.map(({ data }) => (
+        <li>
+          <span class="visually-hidden">{data.title}</span>
+          <Icon name={data.icon} aria-hidden="true" />
+        </li>
+      ))
+    }
+  </ul>
+</article>
+
+<style>
+  article {
+    grid-template-rows: subgrid;
+    grid-template-columns: 0.5em 1fr 0.5em;
+    padding-block-end: 2em;
+    background-color: var(--clr-base);
+    box-shadow: var(--shadow);
+
+    > * {
+      grid-column: 2 / 3;
+    }
+
+    > picture {
+      grid-column: 1 / -1;
+    }
+
+    a {
+      --justify: space-between;
+      --align: start;
+    }
+
+    p {
+      color: var(--clr-muted);
+    }
+  }
+</style>

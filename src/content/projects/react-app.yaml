@@ -1,0 +1,6 @@
+title: React App
+description: A React app showing the power of using React alongside with other front-end technologies.
+image: ./images/react-app.jpg
+url: "https://simpldev.dev/projects/react-app/"
+icons:
+  - javascript

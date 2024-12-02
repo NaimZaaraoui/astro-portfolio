@@ -1,0 +1,52 @@
+---
+// Astro tools
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+
+// Components
+import Heading from "../ui/Heading.astro";
+
+const features = await getCollection("features");
+---
+
+<section class="features | full-width section | text-center">
+  <div class="section__intro | wrapper" data-type="sm">
+    <Heading tagName="h2" class="section__title"
+      >I build fast, sleek, modern websites.</Heading
+    >
+  </div>
+  <ul class="grid-auto">
+    {
+      features.map(({ data }) => {
+        const { title, description, icon } = data;
+        return (
+          <li class="grid">
+            <Icon name={icon} size={55} aria-hidden="true" />
+            <Heading tagName="h3">{title}</Heading>
+            <p>{description}</p>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>
+
+<style>
+  .features {
+    background-color: var(--clr-primary);
+    color: var(--clr-bg);
+  }
+
+  ul {
+    grid-template-rows: repeat(3, auto);
+
+    > * {
+      grid-row: span 3;
+    }
+  }
+
+  li {
+    justify-items: center;
+    grid-template-rows: subgrid;
+  }
+</style>

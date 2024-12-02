@@ -1,0 +1,105 @@
+---
+// Astro tools
+import { Picture, Image } from "astro:assets";
+import { getEntry } from "astro:content";
+
+// Astro types
+import type { CollectionEntry } from "astro:content";
+
+// Utils
+import { slugify } from "@/scripts/utils";
+
+// Components
+import Heading from "./Heading.astro";
+import FormattedDate from "./FormattedDate.astro";
+import Button from "./Button.astro";
+
+interface Props {
+  post: CollectionEntry<"posts">;
+  showImg?: boolean;
+  showDescription?: boolean;
+  showDate?: boolean;
+  showButton?: boolean;
+  class?: string;
+}
+
+const {
+  post,
+  showImg = true,
+  showDescription = true,
+  showDate = true,
+  showButton = true,
+  class: className,
+  ...rest
+} = Astro.props;
+const { title, description, pubDate, author, image } = post.data;
+
+const { data: authorData } = await getEntry(author);
+---
+
+<article class:list={["grid", className]} {...rest}>
+  {
+    showImg && (
+      <Picture
+        src={image}
+        alt={title}
+        formats={["avif", "webp"]}
+        width={400}
+      />
+    )
+  }
+  <Heading
+    tagName="h3"
+    size="h4"
+    class="text-uppercase ls-sm"
+  >
+    <a href=`/blog/${post.slug}`>{title}</a>
+  </Heading>
+  <div class="post-meta | flex">
+    <div class="post-author | flex" data-nowrap>
+      <Image
+        src={authorData.headshot}
+        alt={authorData.name}
+        format="avif"
+        width={35}
+      />
+      <span>By <a href={`/blog/authors/${slugify(authorData.name)}/`}>{authorData.name}</a></span>
+    </div>
+    {showDate && <FormattedDate {pubDate} />}
+  </div>
+  {
+    showDescription && (
+      <p>{description}</p>
+    )
+  }
+ { showButton && <Button href=`/blog/${post.slug}` type="primary"
+    >Read More<span class="visually-hidden">about {title}</span>
+  </Button>}
+</article>
+
+<style>
+  article {
+    grid-template-rows: subgrid;
+    grid-template-columns: 0.5em 1fr 0.5em;
+    padding-block-end: 1.5em;
+    background-color: var(--clr-base);
+    box-shadow: var(--shadow);
+
+    > * {
+      grid-column: 2 / 3;
+    }
+
+    > picture {
+      grid-column: 1 / -1;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    p {
+      color: var(--clr-muted);
+    }
+  }
+</style>

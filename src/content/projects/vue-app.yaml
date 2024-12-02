@@ -1,0 +1,8 @@
+title: Vue App
+description: This Vue app is build using Vue3 new release with its awseome new features like Composition API.
+image: ./images/vue-app.jpg
+url: "https://simpldev.dev/projects/vue-app/"
+icons:
+  - css
+  - react
+  - vite

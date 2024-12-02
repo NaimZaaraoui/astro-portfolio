@@ -1,0 +1,85 @@
+---
+// Astro tools
+import { getCollection } from "astro:content";
+
+// Astro Types
+import type { GetStaticPaths } from "astro";
+import type { CollectionEntry } from "astro:content";
+
+// Components
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostCard from "@/components/ui/PostCard.astro";
+import ContactSection from "@/components/sections/ContactSection.astro";
+import Heading from "@/components/ui/Heading.astro";
+import CategoryCloud from "@/components/ui/CategoryCloud.astro";
+
+// Utils
+import { formatPosts, slugify } from "@/scripts/utils";
+import { getEntry } from "astro:content";
+import { getEntries } from "astro:content";
+
+export const getStaticPaths = (async () => {
+  const allPosts = await getCollection("posts", ({ data }) =>
+    import.meta.env.PROD ? !data.isDraft : true
+  );
+  const formattedPosts: CollectionEntry<"posts">[] = formatPosts(allPosts);
+
+  const allAuthors = await getEntries(
+    formattedPosts.map((post) => post.data.author)
+  );
+
+  const paths = allAuthors.map((author) => {
+    const authorPosts = formattedPosts.filter(
+      ({ data }) => data.author.id === author.id
+    );
+
+    return {
+      params: {
+        author: slugify(author.data.name),
+      },
+      props: {
+        authorName: author.data.name,
+        authorPosts,
+      },
+    };
+  });
+
+  return paths;
+}) satisfies GetStaticPaths;
+
+const { authorName, authorPosts } = Astro.props;
+
+console.log(authorName);
+---
+
+<BaseLayout
+  title=`${authorName} Posts`
+  description=`Posts written by ${authorName}`
+>
+  <section class="section | flow">
+    <Heading tagName="h1" size="h2">Posts by <span>{authorName}</span></Heading>
+    <div class="posts-wrapper | grid-auto">
+      {authorPosts.map((post) => <PostCard {post} />)}
+    </div>
+    <CategoryCloud />
+  </section>
+
+  <ContactSection />
+</BaseLayout>
+
+<style>
+  section {
+    > * {
+      --flow-spacer: 2em;
+    }
+  }
+
+  h1 {
+    margin-block-end: 3rem;
+    text-align: center;
+
+    span {
+      color: var(--clr-primary);
+    }
+  }
+</style>

@@ -1,0 +1,8 @@
+title: Habits App
+description: A habits app made interactive using javascript ES6 new features, including new function syntax. 
+image: ./images/habits-app.jpg
+url: "https://simpldev.dev/projects/habits-app/"
+icons:
+  - tailwind
+  - html
+  - vite

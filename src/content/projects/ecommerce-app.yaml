@@ -1,0 +1,7 @@
+title: Ecommerce App
+description: This E-commerce website show the power of using basic web technologies like CSS and Javascript.
+image: ./images/ecommerce.jpg
+url: "https://simpldev.dev/projects/ecommerce-app/"
+icons:
+  - javascript
+  - css

@@ -1,0 +1,50 @@
+---
+// Astro tools
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+
+// Utils
+import { formatPosts, slugify } from "@/scripts/utils";
+
+// Components
+import Button from "./Button.astro";
+
+const allPosts = await getCollection("posts");
+const formattedPosts: CollectionEntry<"posts">[] = formatPosts(allPosts);
+
+const allCategories = formattedPosts.map((post) =>
+  post.data.category.toLowerCase()
+);
+
+type Acc = {
+  [category: string]: number;
+};
+
+const processedCategories = allCategories.reduce((acc, category) => {
+  // Check if the category exists in the acc
+  const value = acc[category] || 0;
+
+  return {
+    ...acc,
+    [category]: value + 1,
+  };
+}, {} as Acc);
+
+interface Props {
+  showCount?: boolean;
+}
+
+const { showCount = true } = Astro.props;
+---
+
+<ul class="categories | flex">
+  {
+    Object.entries(processedCategories).map(([key, val]) => (
+      <li>
+        <Button type="badge" href={`/blog/categories/${slugify(key)}/`}>
+          {key} {showCount && `(${val})`}
+        </Button>
+      </li>
+    ))
+  }
+</ul>

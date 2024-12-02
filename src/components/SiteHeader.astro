@@ -1,0 +1,180 @@
+---
+// Astro tools
+import { Icon } from "astro-icon/components";
+
+// Data
+import { navData } from "@/data/siteData";
+---
+
+<header class="flex">
+  <a href="/" aria-label="Go Home">
+    <Icon name="logomark" size={48} aria-hidden="true" />
+  </a>
+
+  <button
+    class="nav-toggler"
+    aria-controls="primary-navigation"
+    aria-expanded="false"
+  >
+    <span class="visually-hidden">Menu</span>
+    <span class="bar"></span>
+  </button>
+
+  <nav id="primary-navigation">
+    <ul class="nav-list | flex">
+      {
+        navData.map((item) => (
+          <li>
+            <a href={item.href}>{item.name}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  header {
+    --justify: space-between;
+
+    padding-block: 1em;
+  }
+
+  button {
+    --bars-bg: var(--clr-text);
+
+    position: relative;
+    z-index: 100;
+    width: 35px;
+    height: 20px;
+
+    &:is(:hover, :focus-visible) {
+      --bars-bg: var(--clr-primary);
+    }
+
+    @media (width >= 36em) {
+      display: none;
+    }
+  }
+
+  .bar {
+    inset-block-start: 9px;
+
+    &,
+    &::before,
+    &::after {
+      position: absolute;
+      inset-inline-start: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--bars-bg);
+      transition: var(--trans-400);
+    }
+
+    &::before,
+    &::after {
+      content: "";
+      width: 80%;
+      inset-block-start: -9px;
+    }
+
+    &::after {
+      inset-block-start: 9px;
+    }
+
+    .nav-toggler[aria-expanded="true"] & {
+      --bars-bg: transparent;
+
+      &::before,
+      &::after {
+        --bars-bg: var(--clr-secondary);
+        inset-block-start: 0;
+        width: 100%;
+      }
+
+      &::before {
+        rotate: 45deg;
+      }
+
+      &::after {
+        rotate: -45deg;
+      }
+    }
+  }
+
+  nav {
+    @media (width < 36em) {
+      position: fixed;
+      inset-block-start: 0;
+      inset-inline-end: 0;
+      transform: translateX(calc(100% + 100vmax));
+      z-index: 99;
+      width: min(15rem, 100%);
+      height: 100dvh;
+      padding: 5em 2em 2em;
+      background-color: var(--clr-bg);
+      box-shadow: 0 0 0 100vmax hsl(0 0 0 / 80%);
+
+      transition: transform var(--trans-400);
+
+      .nav-toggler[aria-expanded="true"] + & {
+        transform: translateX(0);
+      }
+    }
+  }
+
+  .nav-list {
+    --gap: 2rem;
+
+    @media (width < 36em) {
+      --direction: column;
+    }
+
+    a {
+      font-size: var(--fs-300);
+      font-weight: var(--fw-semibold);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-sm);
+
+      &.is-active {
+        color: var(--clr-primary);
+      }
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    //
+    // Variables
+    //
+    // console.log("page load");
+    const navToggler = document.querySelector<HTMLButtonElement>(
+      "[aria-controls='primary-navigation']"
+    );
+
+    // Show & hide navigation menu
+    navToggler?.addEventListener("click", function () {
+      this.setAttribute(
+        "aria-expanded",
+        this.getAttribute("aria-expanded") === "true" ? "false" : "true"
+      );
+    });
+
+    // Update active navigation state
+    const { pathname } = window.location;
+
+    const activeLink = document.querySelector(
+      `.nav-list a[href="${pathname}"]`
+    );
+    if (activeLink) {
+      activeLink.classList.add("is-active");
+    }
+  });
+
+  // Resets scroll position to top left corner of the page for each navigation
+  document.addEventListener("astro:after-swap", () => {
+    // console.log("After swapping");
+    window.scrollTo({ left: 0, top: 0, behavior: "instant" });
+  });
+</script>

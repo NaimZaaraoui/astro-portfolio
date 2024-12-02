@@ -1,0 +1,54 @@
+---
+// Astro tools
+import { Picture } from "astro:assets";
+
+// Components
+import Heading from "./Heading.astro";
+import Button from "./Button.astro";
+
+// Assets
+import avatar from "@/assets/avatar.avif";
+
+interface Props {
+  title?: string;
+  description?: string;
+  class?: string;
+}
+
+const {
+  title = "My Portfolio",
+  description = "Here are some recent websites and apps you can explore for yourself!",
+  class: className,
+} = Astro.props;
+---
+
+<div
+  class:list={["page-intro wrapper grid text-center", className]}
+  data-type="sm"
+>
+  <Picture
+    src={avatar}
+    alt="Kevin Haus avatar"
+    formats={["avif", "webp"]}
+    width={175}
+    pictureAttributes={{ class: "intro-banner" }}
+  />
+  <Heading tagName="h1" class="text-uppercase ls-sm">{title}</Heading>
+  <p>
+    {description}
+  </p>
+  <Button href="/" type="outlined">Go Home</Button>
+</div>
+
+<style>
+  .page-intro {
+    --gap: 0.5rem;
+
+    place-items: center;
+    padding-block-start: 2rem;
+  }
+
+  .intro-banner {
+    margin-block-end: 2rem;
+  }
+</style>

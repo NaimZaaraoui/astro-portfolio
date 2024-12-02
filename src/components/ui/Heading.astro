@@ -1,0 +1,22 @@
+---
+const headingOptions = {
+  h1: "h1",
+  h2: "h2",
+  h3: "h3",
+  h4: "h4",
+  h5: "h5",
+};
+
+interface Props {
+  tagName: keyof typeof headingOptions;
+  size?: keyof typeof headingOptions;
+  class?: string;
+}
+
+const { tagName, size, class: classes, ...rest } = Astro.props;
+const Tag = tagName;
+---
+
+<Tag class:list={[classes, size && headingOptions[size]]}{...rest}>
+  <slot />
+</Tag>
