@@ -3,7 +3,6 @@
 import { getCollection } from "astro:content";
 
 // Astro Types
-import type { GetStaticPaths } from "astro";
 import type { CollectionEntry } from "astro:content";
 
 // Components
@@ -15,49 +14,40 @@ import CategoryCloud from "@/components/ui/CategoryCloud.astro";
 
 // Utils
 import { formatPosts, slugify } from "@/scripts/utils";
-import { getEntry } from "astro:content";
 import { getEntries } from "astro:content";
 
-export const getStaticPaths = (async () => {
-  const allPosts = await getCollection("posts", ({ data }) =>
-    import.meta.env.PROD ? !data.isDraft : true
-  );
-  const formattedPosts: CollectionEntry<"posts">[] = formatPosts(allPosts);
+const { author } = Astro.params;
 
-  const allAuthors = await getEntries(
-    formattedPosts.map((post) => post.data.author)
-  );
+if (author === undefined) {
+  return Astro.redirect("/404");
+}
 
-  const paths = allAuthors.map((author) => {
-    const authorPosts = formattedPosts.filter(
-      ({ data }) => data.author.id === author.id
-    );
+const allPosts = await getCollection("posts", ({ data }) =>
+  import.meta.env.PROD ? !data.isDraft : true
+);
+const formattedPosts: CollectionEntry<"posts">[] = formatPosts(allPosts);
 
-    return {
-      params: {
-        author: slugify(author.data.name),
-      },
-      props: {
-        authorName: author.data.name,
-        authorPosts,
-      },
-    };
-  });
+const allAuthors = await getEntries(
+  formattedPosts.map((post) => post.data.author)
+);
 
-  return paths;
-}) satisfies GetStaticPaths;
+const postsAuthor = allAuthors.filter((a) => slugify(a.data.name) === author);
 
-const { authorName, authorPosts } = Astro.props;
-
-console.log(authorName);
+const authorName = postsAuthor[0].data.name;
+const authorPosts = formattedPosts.filter(
+  (post) => post.data.author.id === postsAuthor[0].id
+);
 ---
 
 <BaseLayout
   title=`${authorName} Posts`
-  description=`Posts written by ${authorName}`
->
+  description=`Posts written by ${authorName}`>
   <section class="section | flow">
-    <Heading tagName="h1" size="h2">Posts by <span>{authorName}</span></Heading>
+    <Heading
+      tagName="h1"
+      size="h2"
+      >Posts by <span>{authorName}</span></Heading
+    >
     <div class="posts-wrapper | grid-auto">
       {authorPosts.map((post) => <PostCard {post} />)}
     </div>

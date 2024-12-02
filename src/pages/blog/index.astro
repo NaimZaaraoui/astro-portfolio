@@ -3,7 +3,6 @@
 import { getCollection } from "astro:content";
 
 // Astro Types
-import type { GetStaticPaths } from "astro";
 import type { CollectionEntry } from "astro:content";
 
 // Components
@@ -18,51 +17,54 @@ import CategoryCloud from "@/components/ui/CategoryCloud.astro";
 // Utils
 import { formatPosts } from "@/scripts/utils";
 
-export const getStaticPaths = (async ({ paginate }) => {
-  const allPosts = await getCollection("posts", ({ data }) =>
-    import.meta.env.PROD ? !data.isDraft : true
-  );
-  const formattedPosts: CollectionEntry<"posts">[] = formatPosts(allPosts);
+const allPosts = await getCollection("posts", ({ data }) =>
+  import.meta.env.PROD ? !data.isDraft : true
+);
+const formattedPosts: CollectionEntry<"posts">[] = formatPosts(allPosts);
 
-  
-  return paginate(formattedPosts, {
-    pageSize: 2,
-  });
-}) satisfies GetStaticPaths;
+const currentPage = +(Astro.url.searchParams.get("page") as string) || 1;
+const postsPerPage = 2;
 
-const { page } = Astro.props;
+const totalPages = Math.ceil(formattedPosts.length / postsPerPage);
 
-const { data: posts } = page;
+const paginatedPosts = formattedPosts.slice((currentPage - 1) * postsPerPage, currentPage * postsPerPage)
 ---
 
 <BaseLayout
   title="Kevin Haus Posts"
-  description="Here are some recent projects I’ve done for clients."
->
+  description="Here are some recent projects I’ve done for clients.">
   <PageIntro
     title="My Writings"
     description="I like to write about productivity, web development, design, and working with clients. Get a sense of what it’s like to work with me and understand my process."
   />
 
-  <Heading tagName="h2" class="visually-hidden">Latest posts</Heading>
+  <Heading
+    tagName="h2"
+    class="visually-hidden"
+    >Latest posts</Heading
+  >
 
   <section class="section | flow">
     <div class="posts-wrapper | grid-auto">
-      {posts.map((post) => <PostCard {post} />)}
+      {paginatedPosts.map((post) => <PostCard {post} />)}
     </div>
     <CategoryCloud />
 
     <div class="pagination | flex">
       {
-        page.url.prev && (
-          <Button href={page.url.prev} type="outlined">
+        currentPage > 1 && (
+          <Button
+            href=`/blog?page=${currentPage - 1}`
+            type="outlined">
             Prev
           </Button>
         )
       }
       {
-        page.url.next && (
-          <Button href={page.url.next} type="outlined">
+        currentPage < totalPages && (
+          <Button
+            href=`/blog?page=${currentPage + 1}`
+            type="outlined">
             Next
           </Button>
         )

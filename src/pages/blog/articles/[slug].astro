@@ -1,12 +1,8 @@
 ---
-// Astro types
-import type { GetStaticPaths } from "astro";
-import type { CollectionEntry } from "astro:content";
-
 // Astro tools
-import { getCollection, getEntry } from "astro:content";
+import {getEntry } from "astro:content";
 import { getEntries } from "astro:content";
-import { Picture, Image } from "astro:assets";
+import { Picture } from "astro:assets";
 
 // Utils
 import { slugify } from "@/scripts/utils";
@@ -19,22 +15,17 @@ import PageIntro from "@/components/ui/PageIntro.astro";
 import PostCard from "@/components/ui/PostCard.astro";
 import CategoryCloud from "@/components/ui/CategoryCloud.astro";
 
-export const getStaticPaths = (async () => {
-  const allPosts = await getCollection("posts");
+const {slug} = Astro.params;
 
-  const paths = allPosts.map((post) => ({
-    params: { slug: post.slug },
-    props: { post },
-  }));
-
-  return paths;
-}) satisfies GetStaticPaths;
-
-interface Props {
-  post: CollectionEntry<"posts">;
+if(!slug) {
+  return Astro.redirect("/404")
 }
 
-const { post } = Astro.props;
+const post = await getEntry("posts", slug);
+
+if(!post) {
+  return Astro.redirect("/404")
+}
 
 const { title, description, pubDate, author, image, relatedPosts } = post.data;
 

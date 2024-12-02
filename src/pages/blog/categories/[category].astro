@@ -3,7 +3,6 @@
 import { getCollection } from "astro:content";
 
 // Astro Types
-import type { GetStaticPaths } from "astro";
 import type { CollectionEntry } from "astro:content";
 
 // Components
@@ -15,46 +14,28 @@ import CategoryCloud from "@/components/ui/CategoryCloud.astro";
 
 // Utils
 import { formatPosts, slugify } from "@/scripts/utils";
-import { getEntries } from "astro:content";
 
-export const getStaticPaths = (async () => {
-  const allPosts = await getCollection("posts", ({ data }) =>
-    import.meta.env.PROD ? !data.isDraft : true
-  );
-  const formattedPosts: CollectionEntry<"posts">[] = formatPosts(allPosts);
+const { category } = Astro.params;
 
-  const allCategories = [
-    ...new Set(formattedPosts.map((post) => post.data.category)),
-  ];
+const allPosts = await getCollection("posts", ({ data }) =>
+  import.meta.env.PROD ? !data.isDraft : true
+);
+const formattedPosts: CollectionEntry<"posts">[] = formatPosts(allPosts);
 
-  const paths = allCategories.map((category) => {
-    const categoryPosts = formattedPosts.filter(
-      ({ data }) => data.category === category
-    );
+const categoryPosts = formattedPosts.filter(
+  ({ data }) => slugify(data.category) === category
+);
 
-    return {
-      params: {
-        category: slugify(category),
-      },
-      props: {
-        categoryName: category,
-        categoryPosts,
-      },
-    };
-  });
-
-  return paths;
-}) satisfies GetStaticPaths;
-
-const { categoryName, categoryPosts } = Astro.props;
+const categoryName = categoryPosts[0].data.category;
 ---
 
 <BaseLayout
   title=`${categoryName} Posts`
-  description=`Posts About ${categoryName}`
->
+  description=`Posts About ${categoryName}`>
   <section class="section | flow">
-    <Heading tagName="h1" size="h2"
+    <Heading
+      tagName="h1"
+      size="h2"
       >Posts about <span>{categoryName}</span></Heading
     >
     <div class="posts-wrapper | grid-auto">

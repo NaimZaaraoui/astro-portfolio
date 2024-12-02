@@ -53,7 +53,7 @@ const { data: authorData } = await getEntry(author);
     size="h4"
     class="text-uppercase ls-sm"
   >
-    <a href=`/blog/${post.slug}`>{title}</a>
+    <a href=`/blog/articles/${post.slug}`>{title}</a>
   </Heading>
   <div class="post-meta | flex">
     <div class="post-author | flex" data-nowrap>
@@ -72,7 +72,7 @@ const { data: authorData } = await getEntry(author);
       <p>{description}</p>
     )
   }
- { showButton && <Button href=`/blog/${post.slug}` type="primary"
+ { showButton && <Button href=`/blog/articles/${post.slug}` type="primary"
     >Read More<span class="visually-hidden">about {title}</span>
   </Button>}
 </article>

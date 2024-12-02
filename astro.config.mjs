@@ -1,9 +1,6 @@
 import { defineConfig } from "astro/config";
 import icon from "astro-icon";
-import sitemap from "@astrojs/sitemap";
 import netlify from "@astrojs/netlify";
-
-import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,7 +8,7 @@ export default defineConfig({
     prefetchAll: true,
   },
   site: "https://kevin-haus.netlify.app/",
-  integrations: [icon(), sitemap(), react()],
-  output: "hybrid",
+  integrations: [icon()],
+  output: "server",
   adapter: netlify(),
 });
