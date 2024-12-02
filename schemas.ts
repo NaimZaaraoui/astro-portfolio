@@ -1,4 +1,4 @@
-import { reference, z } from "astro:content";
+import { z } from "astro:content";
 
 const featureSchema = z.object({
   title: z.string(),
