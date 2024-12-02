@@ -11,11 +11,11 @@ const navData = [
   },
   {
     name: "portfolio",
-    href: "/portfolio",
+    href: "/portfolio/",
   },
   {
     name: "blog",
-    href: "/blog",
+    href: "/blog/",
   },
 ];
 
